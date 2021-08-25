@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "service_lib",
+    srcs = ["main.go"],
+    importpath = "databricks.com/service",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//service/vendor/github.com/google/uuid",
+        "//common:common",
+    ],
+)
+
+go_binary(
+    name = "service",
+    embed = [":service_lib"],
+    visibility = ["//visibility:public"],
+)
