@@ -24,6 +24,12 @@ service/main.go:9:22: cannot use "databricks.com/service/vendor/github.com/googl
 
 The type is obviously correct but they come from two different versions. In order to make the compiler happy, we need to make sure everyone is on the exact same version. Bazel has no concept of dependency resolution, so it is up to us to make sure the build is compatible.
 
+**Update**: I realised they had different `importmap` attributes and that's why they failed. But if I use the same `importmap` I get:
+```
+link: package conflict error: vendor/github.com/google/uuid: multiple copies of package passed to linker:
+	//service/vendor/github.com/google/uuid:uuid
+	//common/vendor/github.com/google/uuid:uuid
+```
 ## How to fix this
 
 We create a single Go module named `third_party` that declares the dependencies of all of the projects. We then use Go to resolve those dependencies and 'bazelify' the result. Every go target will then depend on `//third_party/<lib>`. At Databricks, this is how we deal with Scala dependencies.
